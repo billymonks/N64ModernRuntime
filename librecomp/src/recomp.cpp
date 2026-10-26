@@ -51,6 +51,9 @@ std::mutex mod_context_mutex{};
 
 // Global variables
 std::filesystem::path config_path;
+// Folders scanned in addition to the app mods directory. Shipped mods live here
+// so a copy under the app folder cannot outlive the file next to the executable.
+static std::vector<std::filesystem::path> additional_mod_scan_paths;
 // Maps game_id to the game's entry.
 std::unordered_map<std::u8string, recomp::GameEntry> game_roms {};
 // The global mod context.
@@ -95,11 +98,49 @@ void recomp::mods::register_embedded_mod(const std::string &mod_id, std::span<co
     mod_context->register_embedded_mod(mod_id, mod_bytes);
 }
 
+void recomp::mods::add_mod_scan_path(const std::filesystem::path& path) {
+    if (path.empty()) {
+        return;
+    }
+    std::lock_guard mod_lock{ mod_context_mutex };
+    std::error_code ec;
+    for (const auto& existing : additional_mod_scan_paths) {
+        if (std::filesystem::equivalent(existing, path, ec) && !ec) {
+            return;
+        }
+        ec.clear();
+    }
+    additional_mod_scan_paths.push_back(path);
+}
+
 void recomp::mods::scan_mods() {
     std::vector<recomp::mods::ModOpenErrorDetails> mod_open_errors;
     {
         std::lock_guard mod_lock{ mod_context_mutex };
-        mod_open_errors = mod_context->scan_mod_folder(config_path / mods_directory);
+        std::vector<std::filesystem::path> folders;
+        auto consider = [&](const std::filesystem::path& path) {
+            if (path.empty()) {
+                return;
+            }
+            std::error_code ec;
+            if (!std::filesystem::is_directory(path, ec)) {
+                return;
+            }
+            for (const auto& existing : folders) {
+                ec.clear();
+                if (std::filesystem::equivalent(existing, path, ec) && !ec) {
+                    return;
+                }
+            }
+            folders.push_back(path);
+        };
+        // Extra folders first, so a shipped mod wins over a same-id file that
+        // is still sitting in the app mods folder.
+        for (const auto& extra : additional_mod_scan_paths) {
+            consider(extra);
+        }
+        consider(config_path / mods_directory);
+        mod_open_errors = mod_context->scan_mod_folders(folders);
     }
     for (const auto& cur_error : mod_open_errors) {
         printf("Error opening mod " PATHFMT ": %s (%s)\n", cur_error.mod_path.c_str(), recomp::mods::error_to_string(cur_error.error).c_str(), cur_error.error_param.c_str());

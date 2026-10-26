@@ -806,37 +806,48 @@ void recomp::mods::ModContext::dirty_mod_configuration_thread_process() {
 }
 
 std::vector<recomp::mods::ModOpenErrorDetails> recomp::mods::ModContext::scan_mod_folder(const std::filesystem::path& mod_folder) {
+    return scan_mod_folders(std::vector<std::filesystem::path>{mod_folder});
+}
+
+std::vector<recomp::mods::ModOpenErrorDetails> recomp::mods::ModContext::scan_mod_folders(const std::vector<std::filesystem::path>& mod_folders) {
     std::vector<recomp::mods::ModOpenErrorDetails> ret{};
     std::error_code ec;
     close_mods();
 
     static const std::vector<ModContentTypeId> empty_content_types{};
-    for (const auto& mod_path : std::filesystem::directory_iterator{mod_folder, std::filesystem::directory_options::skip_permission_denied, ec}) {
-        bool is_mod = false;
-        bool requires_manifest = true;
-        std::reference_wrapper<const std::vector<ModContentTypeId>> supported_content_types = std::cref(empty_content_types);
-        if (mod_path.is_regular_file()) {
-            auto find_container_it = container_types.find(mod_path.path().extension().string());
-            if (find_container_it != container_types.end()) {
+    for (const std::filesystem::path& mod_folder : mod_folders) {
+        ec.clear();
+        if (mod_folder.empty() || !std::filesystem::is_directory(mod_folder, ec)) {
+            continue;
+        }
+        ec.clear();
+        for (const auto& mod_path : std::filesystem::directory_iterator{mod_folder, std::filesystem::directory_options::skip_permission_denied, ec}) {
+            bool is_mod = false;
+            bool requires_manifest = true;
+            std::reference_wrapper<const std::vector<ModContentTypeId>> supported_content_types = std::cref(empty_content_types);
+            if (mod_path.is_regular_file()) {
+                auto find_container_it = container_types.find(mod_path.path().extension().string());
+                if (find_container_it != container_types.end()) {
+                    is_mod = true;
+                    supported_content_types = find_container_it->second.supported_content_types;
+                    requires_manifest = find_container_it->second.requires_manifest;
+                }
+            }
+            else if (mod_path.is_directory()) {
                 is_mod = true;
-                supported_content_types = find_container_it->second.supported_content_types;
-                requires_manifest = find_container_it->second.requires_manifest;
             }
-        }
-        else if (mod_path.is_directory()) {
-            is_mod = true;
-        }
-        if (is_mod) {
-            printf("Opening mod " PATHFMT "\n", mod_path.path().stem().c_str());
-            std::string open_error_param;
-            ModOpenError open_error = open_mod_from_path(mod_path, open_error_param, supported_content_types, requires_manifest);
+            if (is_mod) {
+                printf("Opening mod " PATHFMT "\n", mod_path.path().stem().c_str());
+                std::string open_error_param;
+                ModOpenError open_error = open_mod_from_path(mod_path, open_error_param, supported_content_types, requires_manifest);
 
-            if (open_error != ModOpenError::Good) {
-                ret.emplace_back(mod_path.path(), open_error, open_error_param);
+                if (open_error != ModOpenError::Good) {
+                    ret.emplace_back(mod_path.path(), open_error, open_error_param);
+                }
             }
-        }
-        else {
-            printf("Skipping non-mod " PATHFMT PATHFMT "\n", mod_path.path().stem().c_str(), mod_path.path().extension().c_str());
+            else {
+                printf("Skipping non-mod " PATHFMT PATHFMT "\n", mod_path.path().stem().c_str(), mod_path.path().extension().c_str());
+            }
         }
     }
 
