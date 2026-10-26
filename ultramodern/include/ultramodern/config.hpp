@@ -57,6 +57,16 @@ namespace ultramodern {
             Off,
             OptionCount
         };
+        enum class TextureFiltering {
+            On,
+            Off,
+            OptionCount
+        };
+        enum class TransparencyMode {
+            Smooth,
+            Flicker,
+            OptionCount
+        };
 
         class GraphicsConfig {
         public:
@@ -69,6 +79,8 @@ namespace ultramodern {
             Antialiasing msaa_option;
             RefreshRate rr_option;
             HighPrecisionFramebuffer hpfb_option;
+            TextureFiltering tf_option;
+            TransparencyMode transparency_option;
             int rr_manual_value;
             int ds_option;
 
@@ -127,6 +139,16 @@ namespace ultramodern {
             {ultramodern::renderer::HighPrecisionFramebuffer::Auto, "Auto"},
             {ultramodern::renderer::HighPrecisionFramebuffer::On, "On"},
             {ultramodern::renderer::HighPrecisionFramebuffer::Off, "Off"},
+        });
+
+        NLOHMANN_JSON_SERIALIZE_ENUM(ultramodern::renderer::TextureFiltering, {
+            {ultramodern::renderer::TextureFiltering::On, "On"},
+            {ultramodern::renderer::TextureFiltering::Off, "Off"},
+        });
+
+        NLOHMANN_JSON_SERIALIZE_ENUM(ultramodern::renderer::TransparencyMode, {
+            {ultramodern::renderer::TransparencyMode::Smooth, "Smooth"},
+            {ultramodern::renderer::TransparencyMode::Flicker, "Flicker"},
         });
     }
 }
