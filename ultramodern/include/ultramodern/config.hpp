@@ -67,6 +67,11 @@ namespace ultramodern {
             Flicker,
             OptionCount
         };
+        enum class AdvancedLighting {
+            Off,
+            On,
+            OptionCount
+        };
 
         class GraphicsConfig {
         public:
@@ -81,6 +86,7 @@ namespace ultramodern {
             HighPrecisionFramebuffer hpfb_option;
             TextureFiltering tf_option;
             TransparencyMode transparency_option;
+            AdvancedLighting advanced_lighting_option;
             int rr_manual_value;
             int ds_option;
 
@@ -149,6 +155,11 @@ namespace ultramodern {
         NLOHMANN_JSON_SERIALIZE_ENUM(ultramodern::renderer::TransparencyMode, {
             {ultramodern::renderer::TransparencyMode::Smooth, "Smooth"},
             {ultramodern::renderer::TransparencyMode::Flicker, "Flicker"},
+        });
+
+        NLOHMANN_JSON_SERIALIZE_ENUM(ultramodern::renderer::AdvancedLighting, {
+            {ultramodern::renderer::AdvancedLighting::Off, "Off"},
+            {ultramodern::renderer::AdvancedLighting::On, "On"},
         });
     }
 }
