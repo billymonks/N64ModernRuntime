@@ -72,6 +72,31 @@ namespace ultramodern {
             On,
             OptionCount
         };
+        enum class SecondBounce {
+            Off,
+            On,
+            OptionCount
+        };
+        enum class AdvancedWater {
+            Off,
+            On,
+            OptionCount
+        };
+        // Upscaler of the ray traced image (Ray Traced Lighting on).
+        enum class RtUpscaler {
+            Off,
+            FSR1,
+            FSR3,
+            OptionCount
+        };
+        enum class RtUpscalerQuality {
+            NativeAA,
+            Quality,
+            Balanced,
+            Performance,
+            UltraPerformance,
+            OptionCount
+        };
 
         class GraphicsConfig {
         public:
@@ -87,6 +112,12 @@ namespace ultramodern {
             TextureFiltering tf_option;
             TransparencyMode transparency_option;
             AdvancedLighting advanced_lighting_option;
+            SecondBounce second_bounce_option;
+            AdvancedWater advanced_water_option;
+            RtUpscaler rt_upscaler_option;
+            RtUpscalerQuality rt_upscaler_quality_option;
+            // From 0 to 100.
+            int rt_upscaler_sharpness;
             int rr_manual_value;
             int ds_option;
 
@@ -160,6 +191,30 @@ namespace ultramodern {
         NLOHMANN_JSON_SERIALIZE_ENUM(ultramodern::renderer::AdvancedLighting, {
             {ultramodern::renderer::AdvancedLighting::Off, "Off"},
             {ultramodern::renderer::AdvancedLighting::On, "On"},
+        });
+
+        NLOHMANN_JSON_SERIALIZE_ENUM(ultramodern::renderer::SecondBounce, {
+            {ultramodern::renderer::SecondBounce::Off, "Off"},
+            {ultramodern::renderer::SecondBounce::On, "On"},
+        });
+
+        NLOHMANN_JSON_SERIALIZE_ENUM(ultramodern::renderer::AdvancedWater, {
+            {ultramodern::renderer::AdvancedWater::Off, "Off"},
+            {ultramodern::renderer::AdvancedWater::On, "On"},
+        });
+
+        NLOHMANN_JSON_SERIALIZE_ENUM(ultramodern::renderer::RtUpscaler, {
+            {ultramodern::renderer::RtUpscaler::Off, "Off"},
+            {ultramodern::renderer::RtUpscaler::FSR1, "FSR1"},
+            {ultramodern::renderer::RtUpscaler::FSR3, "FSR3"},
+        });
+
+        NLOHMANN_JSON_SERIALIZE_ENUM(ultramodern::renderer::RtUpscalerQuality, {
+            {ultramodern::renderer::RtUpscalerQuality::NativeAA, "NativeAA"},
+            {ultramodern::renderer::RtUpscalerQuality::Quality, "Quality"},
+            {ultramodern::renderer::RtUpscalerQuality::Balanced, "Balanced"},
+            {ultramodern::renderer::RtUpscalerQuality::Performance, "Performance"},
+            {ultramodern::renderer::RtUpscalerQuality::UltraPerformance, "UltraPerformance"},
         });
     }
 }
