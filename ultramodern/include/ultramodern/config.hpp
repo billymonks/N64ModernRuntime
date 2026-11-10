@@ -97,6 +97,27 @@ namespace ultramodern {
             UltraPerformance,
             OptionCount
         };
+        // Rays per pixel and frame for the sun shadow, light, bounce and occlusion rays (Ray Traced Lighting on).
+        enum class RtLightSamples {
+            One,
+            Two,
+            Four,
+            OptionCount
+        };
+        // Edge-aware spatial filter of the ray traced lighting.
+        enum class RtDenoiser {
+            Off,
+            Low,
+            High,
+            OptionCount
+        };
+        // How many frames of ray traced lighting are blended together.
+        enum class RtAccumulation {
+            Responsive,
+            Balanced,
+            Stable,
+            OptionCount
+        };
 
         class GraphicsConfig {
         public:
@@ -118,6 +139,9 @@ namespace ultramodern {
             RtUpscalerQuality rt_upscaler_quality_option;
             // From 0 to 100.
             int rt_upscaler_sharpness;
+            RtLightSamples rt_light_samples_option;
+            RtDenoiser rt_denoiser_option;
+            RtAccumulation rt_accumulation_option;
             int rr_manual_value;
             int ds_option;
 
@@ -215,6 +239,24 @@ namespace ultramodern {
             {ultramodern::renderer::RtUpscalerQuality::Balanced, "Balanced"},
             {ultramodern::renderer::RtUpscalerQuality::Performance, "Performance"},
             {ultramodern::renderer::RtUpscalerQuality::UltraPerformance, "UltraPerformance"},
+        });
+
+        NLOHMANN_JSON_SERIALIZE_ENUM(ultramodern::renderer::RtLightSamples, {
+            {ultramodern::renderer::RtLightSamples::One, "One"},
+            {ultramodern::renderer::RtLightSamples::Two, "Two"},
+            {ultramodern::renderer::RtLightSamples::Four, "Four"},
+        });
+
+        NLOHMANN_JSON_SERIALIZE_ENUM(ultramodern::renderer::RtDenoiser, {
+            {ultramodern::renderer::RtDenoiser::Off, "Off"},
+            {ultramodern::renderer::RtDenoiser::Low, "Low"},
+            {ultramodern::renderer::RtDenoiser::High, "High"},
+        });
+
+        NLOHMANN_JSON_SERIALIZE_ENUM(ultramodern::renderer::RtAccumulation, {
+            {ultramodern::renderer::RtAccumulation::Responsive, "Responsive"},
+            {ultramodern::renderer::RtAccumulation::Balanced, "Balanced"},
+            {ultramodern::renderer::RtAccumulation::Stable, "Stable"},
         });
     }
 }
