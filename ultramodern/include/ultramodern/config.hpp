@@ -82,6 +82,12 @@ namespace ultramodern {
             On,
             OptionCount
         };
+        // Whether the game skips scenery and characters away from the camera, which also drops their ray traced shadows.
+        enum class ObjectCulling {
+            Off,
+            On,
+            OptionCount
+        };
         // Upscaler of the ray traced image (Ray Traced Lighting on).
         enum class RtUpscaler {
             Off,
@@ -135,6 +141,7 @@ namespace ultramodern {
             AdvancedLighting advanced_lighting_option;
             SecondBounce second_bounce_option;
             AdvancedWater advanced_water_option;
+            ObjectCulling object_culling_option;
             RtUpscaler rt_upscaler_option;
             RtUpscalerQuality rt_upscaler_quality_option;
             // From 0 to 100.
@@ -225,6 +232,11 @@ namespace ultramodern {
         NLOHMANN_JSON_SERIALIZE_ENUM(ultramodern::renderer::AdvancedWater, {
             {ultramodern::renderer::AdvancedWater::Off, "Off"},
             {ultramodern::renderer::AdvancedWater::On, "On"},
+        });
+
+        NLOHMANN_JSON_SERIALIZE_ENUM(ultramodern::renderer::ObjectCulling, {
+            {ultramodern::renderer::ObjectCulling::Off, "Off"},
+            {ultramodern::renderer::ObjectCulling::On, "On"},
         });
 
         NLOHMANN_JSON_SERIALIZE_ENUM(ultramodern::renderer::RtUpscaler, {
