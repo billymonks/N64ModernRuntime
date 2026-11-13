@@ -88,6 +88,18 @@ namespace ultramodern {
             On,
             OptionCount
         };
+        // Ray marched fog and light shafts in the rooms that have fog set up (Ray Traced Lighting on).
+        enum class VolumetricFog {
+            Off,
+            On,
+            OptionCount
+        };
+        // Screen space rays from the sky around the sun or moon and from window textures (Ray Traced Lighting on).
+        enum class GodRays {
+            Off,
+            On,
+            OptionCount
+        };
         // Upscaler of the ray traced image (Ray Traced Lighting on).
         enum class RtUpscaler {
             Off,
@@ -142,6 +154,8 @@ namespace ultramodern {
             SecondBounce second_bounce_option;
             AdvancedWater advanced_water_option;
             ObjectCulling object_culling_option;
+            VolumetricFog volumetric_fog_option;
+            GodRays god_rays_option;
             RtUpscaler rt_upscaler_option;
             RtUpscalerQuality rt_upscaler_quality_option;
             // From 0 to 100.
@@ -237,6 +251,16 @@ namespace ultramodern {
         NLOHMANN_JSON_SERIALIZE_ENUM(ultramodern::renderer::ObjectCulling, {
             {ultramodern::renderer::ObjectCulling::Off, "Off"},
             {ultramodern::renderer::ObjectCulling::On, "On"},
+        });
+
+        NLOHMANN_JSON_SERIALIZE_ENUM(ultramodern::renderer::VolumetricFog, {
+            {ultramodern::renderer::VolumetricFog::Off, "Off"},
+            {ultramodern::renderer::VolumetricFog::On, "On"},
+        });
+
+        NLOHMANN_JSON_SERIALIZE_ENUM(ultramodern::renderer::GodRays, {
+            {ultramodern::renderer::GodRays::Off, "Off"},
+            {ultramodern::renderer::GodRays::On, "On"},
         });
 
         NLOHMANN_JSON_SERIALIZE_ENUM(ultramodern::renderer::RtUpscaler, {
